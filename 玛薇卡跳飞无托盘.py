@@ -37,11 +37,11 @@ class AppState:
 app_state = AppState()
 
 def handle_number_key(key):
-    if "原神" not in get_foreground_title():
+    current_title = get_foreground_title()
+    if "原神" not in current_title and "云·原神" not in current_title:
         return
     
     with app_state.lock:
-        # 动态判断按键类型
         if key == app_state.enable_key:
             app_state.function_enabled = True
         elif key in {'1','2','3','4','5'} - {app_state.enable_key}:
@@ -49,12 +49,11 @@ def handle_number_key(key):
 
 def on_key_event(event):
     if event.event_type == keyboard.KEY_DOWN:
-        # 处理数字键切换
         if event.name in ['1','2','3','4','5']:
             handle_number_key(event.name)
         
-        # 处理触发键触发
         if event.name == trigger_key:
+            current_title = get_foreground_title()
             with app_state.lock:
                 if app_state.is_handling:
                     return
@@ -62,13 +61,12 @@ def on_key_event(event):
                 if not app_state.function_enabled:
                     return
                 
-                if "原神" not in get_foreground_title():
+                if "原神" not in current_title and "云·原神" not in current_title:
                     return
                 
                 app_state.is_handling = True
 
             try:
-                # 连点三次空格键
                 for _ in range(3):
                     keyboard.press('space')
                     time.sleep(0.02)

@@ -104,8 +104,9 @@ def on_key_event(event):
         handle_number_key(event.name)
         
         if event.name == app_state.trigger_key:
+            current_title = get_foreground_title()  # 新增：获取当前窗口标题
             with app_state.lock:
-                if app_state.is_handling or not app_state.function_enabled or "原神" not in get_foreground_title():
+                if app_state.is_handling or not app_state.function_enabled or ("原神" not in current_title and "云·原神" not in current_title):  # 修改判断条件
                     return
                 
                 app_state.is_handling = True
@@ -121,7 +122,8 @@ def on_key_event(event):
                     app_state.is_handling = False
 
 def handle_number_key(key):
-    if "原神" not in get_foreground_title():
+    current_title = get_foreground_title()  # 新增：获取当前窗口标题
+    if "原神" not in current_title and "云·原神" not in current_title:  # 修改判断条件
         return
     
     with app_state.lock:
